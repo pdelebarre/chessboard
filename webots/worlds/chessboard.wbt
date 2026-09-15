@@ -1,0 +1,76 @@
+#VRML_SIM R2025a utf8
+WorldInfo { basicTimeStep 32 }
+Viewpoint { orientation -0.57 0.82 0.24 1.35 position 3.8 -4.4 4.8 }
+TexturedBackground { }
+TexturedBackgroundLight { }
+
+DEF FLOOR Solid {
+  translation 0 0 -0.10
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.12 0.12 0.13 roughness 0.8 } geometry Box { size 5.0 5.0 0.1 } }
+  ]
+}
+
+# 8x8 playing surface. White and dark squares are deliberately thin so the
+# under-board carriage can be seen during the MVP demonstration.
+DEF BOARD Solid {
+  translation 0 0 0
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.76 0.68 0.55 roughness 0.65 } geometry Box { size 4.02 4.02 0.10 } }
+  ]
+}
+
+# Grid lines
+Transform { translation 0 0 0.055 children [ Shape { appearance PBRAppearance { baseColor 0.12 0.09 0.06 } geometry Box { size 4.06 0.025 0.01 } } ] }
+Transform { translation 0 0 0.055 rotation 0 0 1 1.5708 children [ Shape { appearance PBRAppearance { baseColor 0.12 0.09 0.06 } geometry Box { size 4.06 0.025 0.01 } } ] }
+
+# CoreXY-style rails
+DEF RAIL_X1 Solid { translation 0 -2.18 0.02 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.27 0.30 metallic 0.7 } geometry Box { size 4.6 0.06 0.06 } } ] }
+DEF RAIL_X2 Solid { translation 0 2.18 0.02 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.27 0.30 metallic 0.7 } geometry Box { size 4.6 0.06 0.06 } } ] }
+DEF RAIL_Y1 Solid { translation -2.18 0 0.02 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.27 0.30 metallic 0.7 } geometry Box { size 0.06 4.6 0.06 } } ] }
+DEF RAIL_Y2 Solid { translation 2.18 0 0.02 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.27 0.30 metallic 0.7 } geometry Box { size 0.06 4.6 0.06 } } ] }
+
+# Moving carriage and electromagnet. The controller changes their translation.
+DEF CARRIAGE Solid {
+  translation 0 0 0.08
+  children [ Shape { appearance PBRAppearance { baseColor 0.18 0.19 0.21 metallic 0.6 } geometry Box { size 0.38 0.30 0.08 } } ]
+}
+DEF MAGNET Solid {
+  translation 0 0 0.145
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.10 0.10 0.11 metallic 0.9 } geometry Cylinder { radius 0.11 height 0.10 } }
+    PointLight { color 0.95 0.55 0.10 intensity 0.6 radius 0.35 }
+  ]
+}
+
+# Simplified MVP pieces. Other pieces can be added once the motion model is validated.
+DEF P_E2 Solid {
+  translation -0.25 -1.25 0.20
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.93 0.93 0.90 roughness 0.35 } geometry Cylinder { radius 0.16 height 0.26 } }
+    Shape { appearance PBRAppearance { baseColor 0.93 0.93 0.90 roughness 0.35 } geometry Sphere { radius 0.13 } }
+  ]
+}
+DEF P_E7 Solid {
+  translation -0.25 1.25 0.20
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.08 0.08 0.09 roughness 0.35 } geometry Cylinder { radius 0.16 height 0.26 } }
+    Shape { appearance PBRAppearance { baseColor 0.08 0.08 0.09 roughness 0.35 } geometry Sphere { radius 0.13 } }
+  ]
+}
+
+# Reference pieces: visual context only.
+%{ for r in [1,2,3,4,5,6,7,8] }
+%{ endfor }
+
+DEF STATUS Solid {
+  translation 0 -2.65 0.55
+  children [
+    Shape { appearance PBRAppearance { baseColor 0.18 0.20 0.23 } geometry Box { size 4.2 0.18 0.55 } }
+  ]
+}
+
+Robot {
+  controller "chessboard_controller"
+  supervisor TRUE
+}
